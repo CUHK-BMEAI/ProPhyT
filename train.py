@@ -1,13 +1,13 @@
-from segment_anything import sam_model_registry, SamPredictor
 import torch.nn as nn
 import torch
 import argparse
 import os
 from torch import optim
 from torch.utils.data import DataLoader
-from DataLoader import TrainingDataset, TestingDataset, stack_dict_batched
-from utils import FocalDiceloss_IoULoss, get_logger, generate_point, setting_prompt_none
-from metrics import SegMetrics
+from prophyt.segment_anything import sam_model_registry, SamPredictor
+from prophyt.data import TrainingDataset, TestingDataset, stack_dict_batched
+from prophyt.utils import FocalDiceloss_IoULoss, get_logger, generate_point, setting_prompt_none
+from prophyt.metrics import SegMetrics
 import time
 from tqdm import tqdm
 import numpy as np

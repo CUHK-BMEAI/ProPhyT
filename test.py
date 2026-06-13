@@ -1,12 +1,12 @@
-from segment_anything import sam_model_registry
 import torch.nn as nn
 import torch
 import argparse
 import os
-from utils import FocalDiceloss_IoULoss, generate_point, save_masks
 from torch.utils.data import DataLoader
-from DataLoader import TestingDataset
-from metrics import SegMetrics, dice_by_category
+from prophyt.segment_anything import sam_model_registry
+from prophyt.utils import FocalDiceloss_IoULoss, generate_point, save_masks
+from prophyt.data import TestingDataset
+from prophyt.metrics import SegMetrics, dice_by_category
 import time
 from tqdm import tqdm
 import numpy as np

@@ -15,13 +15,29 @@ The repository contains:
 - `train_cpal_sam_v2.py` and `test_cpal_sam_v2.py`: ProPhyT / CM-CPAL-SAM
   training and testing entry points.
 - `train.py` and `test.py`: baseline SAM-Med2D fine-tuning and testing.
-- `cpal_sam_modules.py`: prototype retrieval and prompt-conditioning modules.
-- `DataLoader.py`, `utils.py`, `metrics.py`: data loading, losses, transforms,
-  logging, mask saving, and segmentation metrics.
-- `segment_anything/`: SAM-Med2D model code used by the training scripts.
-- `SparK/`: encoder components used by the physiological prototype modules.
-- `scripts/`: data split and cross-validation result utilities.
-- `run_*.sh`: reproducible shell wrappers for common training and testing jobs.
+- `prophyt/`: reusable library code, including data loading, metrics, losses,
+  prototype retrieval, prompt conditioning, SAM-Med2D, and encoder components.
+- `scripts/`: reproducible shell wrappers plus data split and result summary
+  utilities.
+
+```text
+.
+├── train_cpal_sam_v2.py        # ProPhyT training entry point
+├── test_cpal_sam_v2.py         # ProPhyT testing entry point
+├── train.py                    # SAM-Med2D baseline training
+├── test.py                     # SAM-Med2D baseline testing
+├── prophyt/
+│   ├── data.py                 # dataset and collate utilities
+│   ├── modules.py              # prototype retrieval and prompt conditioning
+│   ├── metrics.py              # segmentation metrics
+│   ├── utils.py                # losses, transforms, logging, mask saving
+│   ├── segment_anything/       # SAM-Med2D components
+│   └── SparK/                  # encoder components
+└── scripts/
+    ├── run_*.sh                # training/testing wrappers
+    ├── create_subject_5fold_splits.py
+    └── summarize_cpal_cv_results.py
+```
 
 ## Environment
 
@@ -80,7 +96,7 @@ variables in the shell wrappers, for example:
 ```bash
 STAGE1B_CKPT=/path/to/best_model.pth \
 PROTOTYPE_BANK=/path/to/ctp_prototypes_post.npy \
-bash run_train_ctp_prompt.sh
+bash scripts/run_train_ctp_prompt.sh
 ```
 
 ## Quick Start
@@ -88,26 +104,26 @@ bash run_train_ctp_prompt.sh
 Train ProPhyT with dense prototype prompts:
 
 ```bash
-bash run_train_ctp_prompt.sh
+bash scripts/run_train_ctp_prompt.sh
 ```
 
 Test ProPhyT:
 
 ```bash
-bash run_test_ctp_prompt.sh
+bash scripts/run_test_ctp_prompt.sh
 ```
 
 Run 5-fold subject-level ProPhyT training and testing:
 
 ```bash
-bash run_train_test_ctp_prompt_5fold.sh all
+bash scripts/run_train_test_ctp_prompt_5fold.sh all
 ```
 
 Run the SAM-Med2D baseline:
 
 ```bash
-bash run_train_baseline_sam.sh
-bash run_test_baseline_sam.sh
+bash scripts/run_train_baseline_sam.sh
+bash scripts/run_test_baseline_sam.sh
 ```
 
 Most wrappers expose configuration through environment variables, including
