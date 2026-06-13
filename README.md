@@ -133,7 +133,7 @@ If you use this work, please cite the paper once publication metadata are
 available:
 
 ```bibtex
-@article{prophyt2025,
+@article{prophyt2026,
   title   = {Prototype-based Physiological Transfer Enables NCCT-only Stroke Tissue-Window Segmentation Under Missing Perfusion},
   author  = {Ying Dan*, Zhe Xu*, Longxi Zhou, Lu Zhang, Xiangyuan Ma, Raymond Tong, Yading Yuan},
   journal = {MICCAI},
