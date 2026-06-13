@@ -14,7 +14,7 @@ class YourConvNet(nn.Module):
     """
     This is a template for your custom ConvNet.
     It is required to implement the following three functions: `get_downsample_ratio`, `get_feature_map_channels`, `forward`.
-    You can refer to the implementations in `pretrain\models\resnet.py` for an example.
+    You can refer to the implementations in `pretrain/models/resnet.py` for an example.
     """
     
     def get_downsample_ratio(self) -> int:

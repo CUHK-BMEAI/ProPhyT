@@ -1,148 +1,146 @@
-# ProPhyT: Prototype-based Physiological Transfer for NCCT-only Stroke Tissue-Window Segmentation
+# ProPhyT
 
-> **Prototype-based Physiological Transfer Enables NCCT-only Stroke Tissue-Window Segmentation Under Missing Perfusion**
-> MICCAI 2026 (under review)
+Prototype-based Physiological Transfer Enables NCCT-only Stroke Tissue-Window
+Segmentation Under Missing Perfusion.
 
-## Abstract
+## Overview
 
-Accurate delineation of ischemic core and salvageable penumbra is critical for guiding reperfusion therapy in acute ischemic stroke (AIS). While CT perfusion (CTP) provides quantitative hemodynamic parameters for tissue-window assessment, its availability remains limited in many emergency settings. In contrast, non-contrast CT (NCCT) is nearly universally accessible but lacks explicit perfusion information, making core and penumbra segmentation highly challenging.
+ProPhyT targets ischemic core and penumbra segmentation when only non-contrast CT
+(NCCT) is available at inference time. The method transfers CTP-derived
+hemodynamic semantics to NCCT segmentation through a prototype support bank,
+without reconstructing perfusion maps.
 
-We study stroke tissue-window segmentation under missing perfusion, where only NCCT is available at inference. In this setting, specialist NCCT models struggle due to subtle contrast and limited supervision, while reconstructing CTP from NCCT constitutes an ill-posed inverse problem prone to hemodynamic hallucination.
+The repository contains:
 
-To address this, we propose **ProPhyT**, a prototype-based physiological transfer framework that injects CTP-derived hemodynamic semantics into NCCT-based segmentation without reconstructing perfusion maps. ProPhyT consists of three processes:
+- `train_cpal_sam_v2.py` and `test_cpal_sam_v2.py`: ProPhyT / CM-CPAL-SAM
+  training and testing entry points.
+- `train.py` and `test.py`: baseline SAM-Med2D fine-tuning and testing.
+- `cpal_sam_modules.py`: prototype retrieval and prompt-conditioning modules.
+- `DataLoader.py`, `utils.py`, `metrics.py`: data loading, losses, transforms,
+  logging, mask saving, and segmentation metrics.
+- `segment_anything/`: SAM-Med2D model code used by the training scripts.
+- `SparK/`: encoder components used by the physiological prototype modules.
+- `scripts/`: data split and cross-validation result utilities.
+- `run_*.sh`: reproducible shell wrappers for common training and testing jobs.
 
-1. **Hemodynamic Prototype Support Bank Construction** – A self-supervised CTP encoder learns a hemodynamic embedding space and CTP features are clustered to form representative physiological prototypes.
-2. **Cross-Modal Prototype Retrieval Learning** – An NCCT encoder is aligned to the CTP embedding space to enable prototype retrieval from NCCT alone.
-3. **Physiological Prototype-Conditioned Segmentation** – Retrieved prototypes are converted into similarity-aware location prompts to parameter-efficiently fine-tune a medical foundation segmentation model for core and penumbra prediction.
+## Environment
 
-Extensive experiments demonstrate consistent improvements over top-performing baselines for ischemic core and penumbra segmentation, supporting more reliable reperfusion decision-making in CTP-limited clinical settings.
-
-## Method Overview
-
-```
-┌──────────────────────────────────────────────────────────────────┐
-│                         ProPhyT Pipeline                         │
-├────────────────────┬─────────────────────┬───────────────────────┤
-│   Stage 1a         │   Stage 1b          │   Stage 2             │
-│   CTP Prototype    │   NCCT Encoder      │   Prototype-Conditioned│
-│   Bank Construction│   Alignment         │   Segmentation        │
-│                    │                     │                       │
-│  Self-supervised   │  Align NCCT encoder │  Prototype retrieval  │
-│  CTP encoder +     │  to CTP embedding   │  → similarity-aware   │
-│  K-means clustering│  space via          │  prompts → SAM-based  │
-│  → Prototype bank  │  contrastive loss   │  segmentation         │
-└────────────────────┴─────────────────────┴───────────────────────┘
-```
-
-## Requirements
-
-- Python ≥ 3.8
-- PyTorch ≥ 1.13
-- [Segment Anything Model (SAM)](https://github.com/facebookresearch/segment-anything)
-- [SparK](https://github.com/keyu-tian/SparK) (included under `SparK/`)
-
-Install dependencies:
+Create a Python environment with PyTorch, then install the remaining Python
+dependencies:
 
 ```bash
-pip install torch torchvision
-pip install git+https://github.com/facebookresearch/segment-anything.git
+pip install -r requirements.txt
 ```
 
-## Data Preparation
+Install the CUDA-enabled PyTorch build that matches your driver and CUDA runtime
+before running GPU training.
 
-Organize your dataset directory as follows:
+## Expected Data Layout
 
-```
+The loaders expect a dataset root with images, masks, and JSON mappings:
+
+```text
 data_penumbra_noblank_withvalid/
-├── train/
-│   ├── ncct/
-│   ├── ctp/
-│   └── masks/
-├── val/
-└── test/
+  images/
+    <subject>_<slice>.png
+  masks/
+    <subject>_<slice>_core_000.png
+    <subject>_<slice>_penumbra_000.png
+  image2label_train.json
+  label2image_valid.json
+  label2image_test.json
 ```
 
-## Usage
+`image2label_*.json` maps each image path to its two mask paths. `label2image_*.json`
+maps each mask path back to the corresponding image path.
 
-### Stage 1a – Hemodynamic Prototype Bank Construction
-
-Train the self-supervised CTP encoder and build the prototype bank. Refer to the SparK pre-training scripts under `SparK/pretrain/`.
-
-### Stage 1b – Cross-Modal Prototype Retrieval Learning
-
-Train the NCCT encoder to retrieve CTP prototypes:
+For subject-level cross-validation, generate fold JSONs with:
 
 ```bash
-bash run_train_baseline_sam.sh
+python scripts/create_subject_5fold_splits.py \
+  --data-root data_penumbra_noblank_withvalid \
+  --output-root data_penumbra_noblank_withvalid_5fold_subject_seed42 \
+  --n-folds 5 \
+  --seed 42
 ```
 
-### Stage 2 – Prototype-Conditioned Segmentation
+## Checkpoints
 
-Fine-tune the SAM-based segmentation model conditioned on physiological prototypes:
+The ProPhyT wrappers use these default checkpoint paths:
+
+```text
+sam-med2d_b1106.pth
+scripts/logs/cpal_stage1b_v2/best_model.pth
+scripts/logs/cpal_stage1a_post/ctp_prototypes_post.npy
+```
+
+You can either place files at those paths or override them with environment
+variables in the shell wrappers, for example:
+
+```bash
+STAGE1B_CKPT=/path/to/best_model.pth \
+PROTOTYPE_BANK=/path/to/ctp_prototypes_post.npy \
+bash run_train_ctp_prompt.sh
+```
+
+## Quick Start
+
+Train ProPhyT with dense prototype prompts:
 
 ```bash
 bash run_train_ctp_prompt.sh
 ```
 
-Key arguments:
-
-| Argument | Description | Default |
-|---|---|---|
-| `--stage1b_ckpt` | Path to Stage 1b checkpoint | — |
-| `--prototype_bank` | Path to `.npy` prototype bank | — |
-| `--fusion_mode` | Prototype fusion mode (`dense_prompt`) | `dense_prompt` |
-| `--latent_dim` | Embedding dimension | `256` |
-| `--top_k` | Number of prototypes to retrieve | `5` |
-| `--temperature` | Softmax temperature for retrieval | `0.1` |
-
-### Inference
+Test ProPhyT:
 
 ```bash
 bash run_test_ctp_prompt.sh
 ```
 
-## Evaluation
+Run 5-fold subject-level ProPhyT training and testing:
 
 ```bash
-bash run_test_ctp_prompt.sh   # ProPhyT
-bash run_test_baseline_sam.sh # Baseline SAM
+bash run_train_test_ctp_prompt_5fold.sh all
 ```
 
-Metrics (Dice, IoU, etc.) are computed via `metrics.py`.
+Run the SAM-Med2D baseline:
 
-## Repository Structure
+```bash
+bash run_train_baseline_sam.sh
+bash run_test_baseline_sam.sh
+```
 
+Most wrappers expose configuration through environment variables, including
+`PYTHON_BIN`, `WORK_DIR`, `DATA_PATH`, `DEVICE`, `BATCH_SIZE`, `EPOCHS`,
+`STAGE1B_CKPT`, and `PROTOTYPE_BANK`.
+
+## Outputs
+
+Training outputs are written under:
+
+```text
+workdir/
+  logs/
+  models/<run_name>/
 ```
-ProPhyT/
-├── SparK/                   # Self-supervised CTP encoder (SparK backbone)
-├── segment_anything/        # SAM model
-├── cpal_sam_modules.py      # ProPhyT modules (FPN, PrototypeRetriever, etc.)
-├── DataLoader.py            # Dataset utilities
-├── train.py                 # Baseline SAM training
-├── train_cpal_sam_v2.py     # ProPhyT training (Stage 2)
-├── test.py                  # Baseline SAM testing
-├── test_cpal_sam_v2.py      # ProPhyT testing
-├── metrics.py               # Evaluation metrics
-├── utils.py                 # General utilities
-├── run_train_ctp_prompt.sh  # Train ProPhyT
-├── run_test_ctp_prompt.sh   # Test ProPhyT
-├── run_train_baseline_sam.sh
-└── run_test_baseline_sam.sh
-```
+
+Testing writes summary and per-slice CSV files to `workdir/` or
+`workdir/cv_results/`, depending on the wrapper.
 
 ## Citation
 
-If you find this work useful, please cite:
+If you use this work, please cite the paper once publication metadata are
+available:
 
 ```bibtex
-@inproceedings{prophyt2026,
-  title     = {Prototype-based Physiological Transfer Enables NCCT-only Stroke Tissue-Window Segmentation Under Missing Perfusion},
-  booktitle = {Medical Image Computing and Computer Assisted Intervention (MICCAI)},
-  year      = {2026},
-  note      = {Code available upon acceptance}
+@article{prophyt2025,
+  title   = {Prototype-based Physiological Transfer Enables NCCT-only Stroke Tissue-Window Segmentation Under Missing Perfusion},
+  author  = {},
+  journal = {},
+  year    = {2025}
 }
 ```
 
 ## License
 
-Code will be released upon paper acceptance.
+This project is released under the MIT License. See [LICENSE](LICENSE).

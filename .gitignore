@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Environments
+.env
+.venv/
+venv/
+env/
+conda-meta/
+
+# Local data and experiment outputs
+data*/
+workdir/
+logs/
+outputs/
+results/
+cv_results/
+wandb/
+runs/
+
+# Model weights and generated arrays
+*.pth
+*.pt
+*.ckpt
+*.npy
+*.npz
+
+# Generated reports
+*.csv
+*.jsonl
+
+# Local one-off run scripts
+resume_*.sh
+
+# OS/editor files
+.DS_Store
+*.swp
+.vscode/
+.idea/
+
+# Private keys and local credentials
+1
+1.pub
+id_*
+*.pem
+*.key
+*.pub
+known_hosts

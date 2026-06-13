@@ -29,7 +29,6 @@ class FPNAggregator(nn.Module):
  
     def __init__(self, in_channels=(256, 512, 1024, 2048), out_channels=256, target_size=(64, 64)):
         super().__init__()
-名
         self.lateral_convs = nn.ModuleList([nn.Conv2d(c, out_channels, 1) for c in in_channels])
         self.fuse_conv = nn.Conv2d(out_channels * 4, out_channels, 3, padding=1)
         self.target_size = target_size
@@ -179,8 +178,6 @@ class CrossAttentionFusion(nn.Module):
         
      
         ctp_seq = self.ctp_proj(ctp_prototypes)  # [B, K, C]
-        
- ）
         ctp_seq = ctp_seq * weights.unsqueeze(-1)  # [B, K, C]
         
        

@@ -1,0 +1,11 @@
+albumentations
+numpy
+opencv-python
+pandas
+pycocotools
+scikit-image
+scipy
+timm
+torch
+torchvision
+tqdm
