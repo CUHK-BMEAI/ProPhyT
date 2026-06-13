@@ -1,6 +1,6 @@
 # ProPhyT
 
-Prototype-based Physiological Transfer Enables NCCT-only Stroke Tissue-Window
+[MICCAI 2026] Prototype-based Physiological Transfer Enables NCCT-only Stroke Tissue-Window
 Segmentation Under Missing Perfusion.
 
 ## Overview
@@ -135,9 +135,9 @@ available:
 ```bibtex
 @article{prophyt2025,
   title   = {Prototype-based Physiological Transfer Enables NCCT-only Stroke Tissue-Window Segmentation Under Missing Perfusion},
-  author  = {},
-  journal = {},
-  year    = {2025}
+  author  = {Ying Dan*, Zhe Xu*, Longxi Zhou, Lu Zhang, Xiangyuan Ma, Raymond Tong, Yading Yuan},
+  journal = {MICCAI},
+  year    = {2026}
 }
 ```
 
