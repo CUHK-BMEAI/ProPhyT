@@ -135,7 +135,7 @@ available:
 ```bibtex
 @article{prophyt2026,
   title   = {Prototype-based Physiological Transfer Enables NCCT-only Stroke Tissue-Window Segmentation Under Missing Perfusion},
-  author  = {Ying Dan*, Zhe Xu*, Longxi Zhou, Lu Zhang, Xiangyuan Ma, Raymond Tong, Yading Yuan},
+  author  = {Ying Dan*, Zhe Xu*, Longxi Zhou, Lu Zhang, Xiangyuan Ma, Yading Yuan, Raymond Tong},
   journal = {MICCAI},
   year    = {2026}
 }
