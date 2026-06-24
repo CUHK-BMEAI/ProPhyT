@@ -3,7 +3,7 @@
 支持三种融合模式的测试：cross_attention / dense_prompt / sparse_prompt
 """
 
-from segment_anything import sam_model_registry
+from prophyt.segment_anything import sam_model_registry
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -23,10 +23,10 @@ from scipy.ndimage import distance_transform_edt, binary_erosion
 import pandas as pd
 
 
-from DataLoader import TestingDataset
-from utils import FocalDiceloss_IoULoss, generate_point, save_masks
-from metrics import SegMetrics, dice_by_category
-from cpal_sam_modules import build_cpal_sam_model
+from prophyt.data import TestingDataset
+from prophyt.utils import FocalDiceloss_IoULoss, generate_point, save_masks
+from prophyt.metrics import SegMetrics, dice_by_category
+from prophyt.modules import build_cpal_sam_model
 
 
 def parse_args():

@@ -3,10 +3,10 @@ set -euo pipefail
 
 # Subject-level 5-fold CV wrapper for the plain SAM-Med2D fine-tuning baseline.
 # Usage:
-#   GPU_ID=0 bash run_train_test_baseline_sam_5fold.sh all
-#   GPU_ID=0 bash run_train_test_baseline_sam_5fold.sh 4
+#   GPU_ID=0 bash scripts/run_train_test_baseline_sam_5fold.sh all
+#   GPU_ID=0 bash scripts/run_train_test_baseline_sam_5fold.sh 4
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${REPO_ROOT}"
 
 CONDA_ENV="${CONDA_ENV:-swin_litemedsam}"

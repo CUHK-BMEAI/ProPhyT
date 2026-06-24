@@ -2,7 +2,7 @@
 """Create reproducible subject-level 5-fold JSON splits for SAM-Med2D.
 
 The generated fold directories contain the JSON files expected by
-DataLoader.TrainingDataset and DataLoader.TestingDataset:
+prophyt.data.TrainingDataset and prophyt.data.TestingDataset:
 
   image2label_train.json
   label2image_valid.json

@@ -21,15 +21,15 @@ from pathlib import Path
 import json
 
 
-from segment_anything import sam_model_registry
+from prophyt.segment_anything import sam_model_registry
 
 
-from DataLoader import TrainingDataset, TestingDataset, stack_dict_batched
-from utils import FocalDiceloss_IoULoss, get_logger
-from metrics import SegMetrics
+from prophyt.data import TrainingDataset, TestingDataset, stack_dict_batched
+from prophyt.utils import FocalDiceloss_IoULoss, get_logger
+from prophyt.metrics import SegMetrics
 
 
-from cpal_sam_modules import build_cpal_sam_model
+from prophyt.modules import build_cpal_sam_model
 
 
 def parse_args():

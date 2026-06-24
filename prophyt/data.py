@@ -9,7 +9,7 @@ import numpy as np
 from torch.nn import functional as F
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from utils import train_transforms, test_transforms, get_boxes_from_mask, init_point_sampling
+from .utils import train_transforms, test_transforms, get_boxes_from_mask, init_point_sampling
 import json
 import random
 
@@ -206,4 +206,3 @@ if __name__ == "__main__":
     for i, batched_image in enumerate(tqdm(train_batch_sampler)):
         batched_image = stack_dict_batched(batched_image)
         print(batched_image["image"].shape, batched_image["label"].shape)
-

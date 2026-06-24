@@ -3,8 +3,11 @@ set -euo pipefail
 
 # Subject-level 5-fold CV training wrapper for the CTP dense-prompt setup.
 # Usage:
-#   bash run_train_ctp_prompt_5fold.sh 0
-#   bash run_train_ctp_prompt_5fold.sh all
+#   bash scripts/run_train_ctp_prompt_5fold.sh 0
+#   bash scripts/run_train_ctp_prompt_5fold.sh all
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${REPO_ROOT}"
 
 PYTHON_BIN="${PYTHON_BIN:-python}"
 if [ -n "${ENV_LIB:-}" ]; then
